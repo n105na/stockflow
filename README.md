@@ -53,7 +53,7 @@ Dans un contexte réel, la gestion de stock nécessite :
 ### 1. Cloner le projet
 
 ```bash
-git clone https://github.com/TON_USERNAME/stockflow.git
+git clone https://github.com/n105na/stockflow.git
 cd stockflow
 ```
 
@@ -319,7 +319,22 @@ GRANT ALL ON SCHEMA public TO stockuser;
 
 ---
 
+## Docker Image (Backend API)
+
+Image disponible sur Docker Hub :
+
+https://hub.docker.com/r/n105na/stockflow-api
+
+### Lancer l'API seule
+
+```bash
+docker run -p 8000:8000 n105na/stockflow-api
+```
+
+---
+
 ##  Auteur
 
 Projet réalisé dans le cadre de la SAE DDAW
+
 **Étudiant : BENIAINI Amina**
