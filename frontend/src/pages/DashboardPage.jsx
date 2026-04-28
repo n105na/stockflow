@@ -27,7 +27,8 @@ export default function DashboardPage() {
   ];
 
   return (
-    <div>
+    <div className="space-y-8">
+
       {/* Header */}
       <PageHeader
         title="Dashboard"
@@ -46,42 +47,97 @@ export default function DashboardPage() {
         ))}
       </div>
 
+      {/* Stock Overview (NEW) */}
+      <Card title="État du stock">
+        <div className="overflow-x-auto">
+          <table className="min-w-full text-left">
+            <thead>
+              <tr className="border-b text-sm text-slate-500">
+                <th className="py-3">Produit</th>
+                <th className="py-3">Quantité</th>
+                <th className="py-3">Stock minimum</th>
+                <th className="py-3">Statut</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {summary.products?.length === 0 && (
+                <tr>
+                  <td colSpan="4" className="py-6 text-center text-slate-500">
+                    Aucun produit.
+                  </td>
+                </tr>
+              )}
+
+              {summary.products?.map((p) => (
+                <tr key={p.id} className="border-b last:border-b-0">
+
+                  <td className="py-3 font-medium text-slate-900">
+                    {p.name}
+                  </td>
+
+                  <td className="py-3">
+                    {p.quantity}
+                  </td>
+
+                  <td className="py-3">
+                    {p.minimum_stock}
+                  </td>
+
+                  <td className="py-3">
+                    <span
+                      className={
+                        p.is_low_stock
+                          ? "rounded-full bg-red-100 px-3 py-1 text-xs font-semibold text-red-600"
+                          : "rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-600"
+                      }
+                    >
+                      {p.is_low_stock ? "Stock bas" : "Normal"}
+                    </span>
+                  </td>
+
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </Card>
+
       {/* Recent Movements */}
-      <div className="mt-8">
-        <Card title="Mouvements récents">
-          <div className="space-y-3">
-            {summary.recent_movements.length === 0 && (
-              <p className="text-slate-500">Aucun mouvement.</p>
-            )}
+      <Card title="Mouvements récents">
+        <div className="space-y-3">
+          {summary.recent_movements.length === 0 && (
+            <p className="text-slate-500">Aucun mouvement.</p>
+          )}
 
-            {summary.recent_movements.map((m) => (
-              <div
-                key={m.id}
-                className="flex items-center justify-between rounded-xl bg-slate-50 px-4 py-3"
-              >
-                <div>
-                  <p className="font-medium text-slate-900">
-                    {m.product_name}
-                  </p>
-                  <p className="text-sm text-slate-500">
-                    {m.reason}
-                  </p>
-                </div>
-
-                <div
-                  className={
-                    m.movement_type === "IN"
-                      ? "font-semibold text-emerald-600"
-                      : "font-semibold text-red-500"
-                  }
-                >
-                  {m.movement_type === "IN" ? "+" : "-"} {m.quantity}
-                </div>
+          {summary.recent_movements.map((m) => (
+            <div
+              key={m.id}
+              className="flex items-center justify-between rounded-xl bg-slate-50 px-4 py-3"
+            >
+              <div>
+                <p className="font-medium text-slate-900">
+                  {m.product_name}
+                </p>
+                <p className="text-sm text-slate-500">
+                  {m.reason}
+                </p>
               </div>
-            ))}
-          </div>
-        </Card>
-      </div>
+
+              <div
+                className={
+                  m.movement_type === "IN"
+                    ? "font-semibold text-emerald-600"
+                    : "font-semibold text-red-500"
+                }
+              >
+                {m.movement_type === "IN" ? "+" : "-"} {m.quantity}
+              </div>
+            </div>
+          ))}
+        </div>
+      </Card>
+
     </div>
   );
 }

@@ -3,7 +3,7 @@ import api from "../api";
 
 export default function LoginPage({ onLogin }) {
   const [username, setUsername] = useState("admin");
-  const [password, setPassword] = useState("admin1234");
+  const [password, setPassword] = useState("1234");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 

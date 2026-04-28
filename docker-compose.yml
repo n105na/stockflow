@@ -1,0 +1,54 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16
+    container_name: stockflow_db
+    environment:
+      POSTGRES_DB: stockflow
+      POSTGRES_USER: stockflow
+      POSTGRES_PASSWORD: stockflow
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U stockflow -d stockflow"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: ./backend
+    container_name: stockflow_backend
+    env_file:
+      - .env
+    environment:
+      DB_NAME: stockflow
+      DB_USER: stockflow
+      DB_PASSWORD: stockflow
+      DB_HOST: db
+      DB_PORT: 5432
+
+      DJANGO_SUPERUSER_USERNAME: admin
+      DJANGO_SUPERUSER_EMAIL: admin@mail.com
+      DJANGO_SUPERUSER_PASSWORD: admin1234
+
+    depends_on:
+      db:
+        condition: service_healthy
+
+    ports:
+      - "8000:8000"
+
+    volumes:
+      - ./backend:/app
+
+  frontend:
+    build: ./frontend
+    container_name: stockflow_frontend
+    depends_on:
+      - backend
+    ports:
+      - "5173:5173"
+
+volumes:
+  pgdata:

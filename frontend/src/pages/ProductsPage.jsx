@@ -9,16 +9,18 @@ const inputClass =
 const numberInputClass =
   "w-full rounded-lg border border-slate-300 px-4 py-2 bg-white outline-none focus:ring-2 focus:ring-blue-500 appearance-none";
 
-const emptyProduct = {
-  name: "",
-  sku: "",
-  description: "",
-  quantity: 0,
-  minimum_stock: 0,
-  price: 0,
-  category: "",
-  supplier_ids: [],
-};
+  const emptyProduct = {
+    name: "",
+    sku: "",
+    description: "",
+    quantity: 0,
+    minimum_stock: 0,
+    price: 0,
+    category: "",
+    supplier_ids: [],
+    storage_location: "",
+    barcode: "",
+  };
 
 export default function ProductsPage() {
   const [products, setProducts] = useState([]);
@@ -70,45 +72,73 @@ export default function ProductsPage() {
   async function saveProduct(e) {
     e.preventDefault();
     setError("");
-
+  
     try {
       const payload = {
-        ...productForm,
+        name: productForm.name,
+        sku: productForm.sku,
+        description: productForm.description,
         quantity: Number(productForm.quantity),
         minimum_stock: Number(productForm.minimum_stock),
         price: Number(productForm.price),
         category: Number(productForm.category),
+        supplier_ids: productForm.supplier_ids,
       };
-
+  
+      let productId = editingId;
+  
       if (editingId) {
         await api.patch(`/products/${editingId}/`, payload);
       } else {
-        await api.post("/products/", payload);
+        const res = await api.post("/products/", payload);
+        productId = res.data.id;
       }
-
+  
+      // ✅ HANDLE ProductDetails (OneToOne)
+      if (productForm.storage_location || productForm.barcode) {
+        const existing = products.find((p) => p.id === productId)?.details;
+  
+        const detailsPayload = {
+          product: productId,
+          storage_location: productForm.storage_location,
+          barcode: productForm.barcode,
+        };
+  
+        if (existing?.id) {
+          await api.patch(`/product-details/${existing.id}/`, detailsPayload);
+        } else {
+          await api.post("/product-details/", detailsPayload);
+        }
+      }
+  
       setProductForm(emptyProduct);
       setEditingId(null);
       await loadAll();
+  
     } catch {
       setError("Erreur lors de l'enregistrement.");
     }
   }
 
   function startEdit(p) {
-    setEditingId(p.id);
-    setProductForm({
-      name: p.name,
-      sku: p.sku,
-      description: p.description,
-      quantity: p.quantity,
-      minimum_stock: p.minimum_stock,
-      price: p.price,
-      category: p.category,
-    });
+  setEditingId(p.id);
 
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }
+  setProductForm({
+    name: p.name,
+    sku: p.sku,
+    description: p.description,
+    quantity: p.quantity,
+    minimum_stock: p.minimum_stock,
+    price: p.price,
+    category: p.category,
+    supplier_ids: p.suppliers.map((s) => s.id),
+    storage_location: p.details?.storage_location || "",
+    barcode: p.details?.barcode || "",
+  });
 
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+  
   async function deleteProduct(id) {
     if (!window.confirm("Supprimer ce produit ?")) return;
     await api.delete(`/products/${id}/`);
@@ -219,7 +249,37 @@ export default function ProductsPage() {
                 <option key={c.id} value={c.id}>{c.name}</option>
               ))}
             </select>
+            {/* MANY TO MANY - SUPPLIERS */}
+<select
+  multiple
+  className={inputClass}
+  value={productForm.supplier_ids}
+  onChange={(e) =>
+    handleChange(
+      "supplier_ids",
+      Array.from(e.target.selectedOptions).map((o) => Number(o.value))
+    )
+  }
+>
+  {suppliers.map((s) => (
+    <option key={s.id} value={s.id}>{s.name}</option>
+  ))}
+</select>
 
+{/* ONE TO ONE - PRODUCT DETAILS */}
+<input
+  className={inputClass}
+  placeholder="Emplacement (ex: A1, B2...)"
+  value={productForm.storage_location}
+  onChange={(e) => handleChange("storage_location", e.target.value)}
+/>
+
+<input
+  className={inputClass}
+  placeholder="Code barre"
+  value={productForm.barcode}
+  onChange={(e) => handleChange("barcode", e.target.value)}
+/>
             <button className="w-full bg-slate-900 text-white py-2 rounded-lg hover:bg-blue-700">
               Enregistrer
             </button>

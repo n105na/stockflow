@@ -101,7 +101,8 @@ class DashboardSummaryView(APIView):
         low_stock_products = Product.objects.filter(quantity__lte=F("minimum_stock")).count()
         total_categories = Category.objects.count()
         total_suppliers = Supplier.objects.count()
-
+        products = Product.objects.all().order_by("-created_at")[:10]
+        products_data = ProductSerializer(products, many=True).data
         stock_value_expression = ExpressionWrapper(
             F("quantity") * F("price"),
             output_field=DecimalField(max_digits=14, decimal_places=2),
@@ -119,4 +120,5 @@ class DashboardSummaryView(APIView):
             "total_suppliers": total_suppliers,
             "total_stock_value": total_stock_value,
             "recent_movements": recent_data,
+            "products": products_data,
         })
