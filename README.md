@@ -208,11 +208,11 @@ POST /api/auth/login/
 
 ---
 
-## 🧠 Logique métier importante
+##  Logique métier importante
 
 Le stock n’est **pas modifié directement**.
 
-👉 Il est géré via les mouvements :
+ Il est géré via les mouvements :
 
 * IN → augmente le stock
 * OUT → diminue le stock
@@ -293,7 +293,7 @@ database does not exist
 
 ---
 
-### 3. Permissions PostgreSQL
+### 2. Permissions PostgreSQL
 
 Erreur :
 
