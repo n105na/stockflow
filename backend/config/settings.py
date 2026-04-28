@@ -143,5 +143,6 @@ STATIC_URL = 'static/'
 CORS_ALLOW_ALL_ORIGINS = True
 ALLOWED_HOSTS = ["*"]
 CSRF_TRUSTED_ORIGINS = [
-    "https://stockflow-q7ro.onrender.com"
+    "https://stockflow-q7ro.onrender.com",
+    "https://stockflow-1-1kj3.onrender.com/"
 ]
