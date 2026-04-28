@@ -1,33 +1,34 @@
-#  StockFlow — API de Gestion de Stock
+#  StockFlow — API de Gestion de Stock
 
-##  Contexte du projet
+##  Contexte du projet
 
 Ce projet a été réalisé dans le cadre de la SAE *“Développement & Déploiement d’une Application Web RESTful Conteneurisée”*.
 
-L’objectif est de concevoir une API permettant de gérer un système de stock (produits, fournisseurs, mouvements de stock) en respectant les bonnes pratiques :
+L’objectif est de concevoir une application complète permettant de gérer un système de stock, tout en respectant les bonnes pratiques :
 
 * API REST (GET, POST, PATCH, DELETE)
 * Base de données relationnelle
 * Utilisation d’un ORM
-* Architecture propre (modulaire)
+* Architecture modulaire
 * Authentification sécurisée
+* Conteneurisation avec Docker
 
 ---
 
-##  Problème traité
+##  Problème traité
 
-Dans un système réel, la gestion du stock nécessite :
+Dans un contexte réel, la gestion de stock nécessite :
 
 * suivre les produits
 * gérer les fournisseurs
 * tracer les entrées/sorties
-* éviter les incohérences (stock négatif)
+* éviter les incohérences (ex : stock négatif)
 
- Cette API répond à ces besoins avec un système structuré et traçable.
+ Cette API répond à ces besoins avec un système structuré, fiable et traçable.
 
 ---
 
-##  Technologies utilisées
+##  Technologies utilisées
 
 ### Backend
 
@@ -36,13 +37,106 @@ Dans un système réel, la gestion du stock nécessite :
 * JWT (authentification)
 * ORM Django
 
+### Frontend
+
+* React (Vite)
+* Tailwind CSS
+
 ### Base de données
 
 * PostgreSQL
 
 ---
 
-##  Modélisation des données
+##  Lancement avec Docker (Recommandé)
+
+### 1. Cloner le projet
+
+```bash
+git clone https://github.com/TON_USERNAME/stockflow.git
+cd stockflow
+```
+
+### 2. Lancer l’application
+
+```bash
+docker compose up --build
+```
+
+---
+
+##  Accès aux services
+
+| Service      | URL                         |
+| ------------ | --------------------------- |
+| Frontend     | http://localhost:5173       |
+| Backend API  | http://localhost:8000/api   |
+| Admin Django | http://localhost:8000/admin |
+
+---
+
+##  Identifiants de test
+
+```text
+username: admin
+password: admin1234
+```
+
+---
+
+##  Données de démonstration
+
+Les données sont automatiquement créées au démarrage grâce à une commande Django personnalisée :
+
+```bash
+python manage.py seed_data
+```
+
+✔ Catégories
+✔ Fournisseurs
+✔ Produits
+✔ Mouvements de stock
+
+---
+
+##  Architecture du projet
+
+```text
+stockflow/
+├── backend/
+│   ├── inventory/
+│   ├── manage.py
+│   └── Dockerfile
+│
+├── frontend/
+│   ├── src/
+│   └── Dockerfile
+│
+├── docker-compose.yml
+└── .env
+```
+
+---
+
+##  Architecture Docker
+
+L’application est composée de **3 services** :
+
+* **db** → PostgreSQL (persistance des données)
+* **backend** → API Django REST
+* **frontend** → Interface React
+
+ Les services communiquent via un réseau Docker.
+
+ Les données sont persistées grâce à un volume :
+
+```yaml
+pgdata:/var/lib/postgresql/data
+```
+
+---
+
+##  Modélisation des données
 
 ### Relations implémentées
 
@@ -70,73 +164,80 @@ Dans un système réel, la gestion du stock nécessite :
 * Historique des mouvements
 * Validation métier (pas de stock négatif)
 * Authentification JWT
-* API sécurisée
 
 ---
 
-##  Installation du projet (Backend)
+##  Exemple de requête API
 
-### 1. Cloner le projet
+### Créer un produit
 
-```bash
-git clone https://github.com/TON_USERNAME/stockflow.git
-cd stockflow/backend
+```http
+POST /api/products/
+```
+
+```json
+{
+  "name": "Produit test",
+  "sku": "TEST-001",
+  "quantity": 10,
+  "minimum_stock": 2,
+  "price": 50,
+  "category": 1,
+  "supplier_ids": [1]
+}
 ```
 
 ---
 
-### 2. Créer un environnement virtuel
+##  Authentification
+
+### Endpoint login
+
+```http
+POST /api/auth/login/
+```
+
+```json
+{
+  "username": "admin",
+  "password": "admin1234"
+}
+```
+
+ Retourne un token JWT
+
+---
+
+## 🧠 Logique métier importante
+
+Le stock n’est **pas modifié directement**.
+
+👉 Il est géré via les mouvements :
+
+* IN → augmente le stock
+* OUT → diminue le stock
+* Vérification → empêche un stock négatif
+
+---
+
+##  Installation locale (optionnelle)
+
+### 1. Créer un environnement virtuel
 
 ```bash
 python -m venv venv
 source venv/bin/activate
 ```
 
----
-
-### 3. Installer les dépendances
+### 2. Installer les dépendances
 
 ```bash
 pip install -r requirements.txt
 ```
 
----
+### 3. Configurer PostgreSQL
 
-##  Configuration PostgreSQL
-
-### 1. Installer PostgreSQL (Linux)
-
-```bash
-sudo pacman -S postgresql
-```
-
----
-
-### 2. Créer la base de données
-
-```bash
-sudo -u postgres psql
-```
-
-```sql
-CREATE DATABASE stockflow;
-CREATE USER stockuser WITH PASSWORD 'stockpass';
-GRANT ALL PRIVILEGES ON DATABASE stockflow TO stockuser;
-```
-
----
-
-### 3. Donner les permissions (IMPORTANT)
-
-```sql
-\c stockflow
-GRANT ALL ON SCHEMA public TO stockuser;
-ALTER SCHEMA public OWNER TO stockuser;
-```
-
----
-
-### 4. Configurer Django (`settings.py`)
+Dans `settings.py` :
 
 ```python
 DATABASES = {
@@ -151,81 +252,34 @@ DATABASES = {
 }
 ```
 
----
-
-##  Lancer le projet
-
-### Appliquer les migrations
+### 4. Lancer le projet
 
 ```bash
 python manage.py migrate
-```
-
----
-
-### Créer un super utilisateur
-
-```bash
-python manage.py createsuperuser
-```
-
----
-
-### Lancer le serveur
-
-```bash
+python manage.py seed_data
 python manage.py runserver
 ```
 
 ---
 
-##  Authentification
+##  Configuration (.env)
 
-### Endpoint login
+Un fichier `.env` est utilisé pour configurer l’environnement Docker :
 
-```bash
-POST /api/auth/login/
+```env
+DB_NAME=stockflow
+DB_USER=stockflow
+DB_PASSWORD=stockflow
+DB_HOST=db
+DB_PORT=5432
+
+DJANGO_SUPERUSER_USERNAME=admin
+DJANGO_SUPERUSER_PASSWORD=admin1234
 ```
 
-Body JSON :
-
-```json
-{
-  "username": "admin",
-  "password": "password"
-}
-```
-
- Retourne un token JWT
-
 ---
 
-##  Endpoints API
-
-| Méthode | Endpoint                |
-| ------- | ----------------------- |
-| GET     | /api/products/          |
-| POST    | /api/products/          |
-| GET     | /api/categories/        |
-| GET     | /api/suppliers/         |
-| POST    | /api/stock-movements/   |
-| GET     | /api/dashboard/summary/ |
-
----
-
-##  Logique métier importante
-
-Le stock n’est **pas modifié directement**.
-
-👉 Il est géré via les mouvements :
-
-* IN → augmente le stock
-* OUT → diminue le stock
-* Vérification → empêche stock négatif
-
----
-
-##  Problèmes rencontrés
+##  Problèmes rencontrés
 
 ### 1. Base de données inexistante
 
@@ -235,13 +289,7 @@ Erreur :
 database does not exist
 ```
 
-✔ Solution : création manuelle avec PostgreSQL
-
----
-
-### 2. Problème de collation (Arch Linux)
-
-✔ Solution : réinitialisation ou refresh du cluster PostgreSQL
+✔ Solution : création manuelle ou via Docker
 
 ---
 
@@ -261,19 +309,17 @@ GRANT ALL ON SCHEMA public TO stockuser;
 
 ---
 
-##  Résultat final
+##  Résultat final
 
-* API REST fonctionnelle
-* Base de données PostgreSQL
+* API REST complète
+* Base PostgreSQL persistante
 * Authentification sécurisée
-* Architecture propre et modulaire
-* Prêt pour Docker et déploiement
+* Architecture modulaire
+* Conteneurisation Docker complète
 
 ---
 
-##  Auteur
+##  Auteur
 
 Projet réalisé dans le cadre de la SAE DDAW
-Étudiant : *BENIAINI Amina*
-
----
+**Étudiant : BENIAINI Amina**
