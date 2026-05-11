@@ -73,6 +73,21 @@ docker compose up --build
 | Backend API  | http://localhost:8000/api   |
 | Admin Django | http://localhost:8000/admin |
 
+
+---
+
+## Déploiement en ligne (Render)
+
+Une version déployée de l’application est disponible sur Render :
+
+Frontend :
+https://stockflow-1-1kj3.onrender.com/dashboard
+
+Backend API :
+https://stockflow-q7ro.onrender.com/api
+
+Cette version permet de tester l’application directement sans installation locale ni Docker.
+
 ---
 
 ##  Identifiants de test
@@ -316,6 +331,7 @@ GRANT ALL ON SCHEMA public TO stockuser;
 * Authentification sécurisée
 * Architecture modulaire
 * Conteneurisation Docker complète
+* Déploiement cloud avec Render
 
 ---
 
