@@ -441,8 +441,23 @@ Le projet final contient :
 
 # Démonstration
 
+##  Données de démonstration
+
+Les données sont automatiquement créées au démarrage grâce à une commande Django personnalisée :
+
+```bash
+python manage.py seed_data
+```
+
+
+✔ Catégories
+✔ Fournisseurs
+✔ Produits
+✔ Mouvements de stock
 
 ---
+
+
 
 # Auteur
 
