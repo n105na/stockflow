@@ -62,7 +62,23 @@ cd stockflow
 ```bash
 docker compose up --build
 ```
+### 3.Arrêter les conteneurs
+```bash
+docker compose down
+```
 
+### 4.Relancer les conteneurs
+```
+docker compose up
+```
+### 5.Voir les logs
+```
+docker compose logs
+```
+### 6.Voir les conteneurs actifs
+```
+docker ps
+```
 ---
 
 ##  Accès aux services
@@ -81,7 +97,7 @@ docker compose up --build
 Une version déployée de l’application est disponible sur Render :
 
 Frontend :
-https://stockflow-1-1kj3.onrender.com/dashboard
+https://stockflow-1-1kj3.onrender.com/
 
 Backend API :
 https://stockflow-q7ro.onrender.com/api
@@ -341,16 +357,25 @@ Image disponible sur Docker Hub :
 
 https://hub.docker.com/r/n105na/stockflow-api
 
-### Lancer l'API seule
+### Télécharger l’image
+
+```bash
+docker pull n105na/stockflow-api
+
+### Lancer l'API seule a partir de l'image 
 
 ```bash
 docker run -p 8000:8000 n105na/stockflow-api
 ```
+### L’API sera accessible sur :
 
+```
+http://localhost:8000/api
+```
 ---
 
 ##  Auteur
 
-Projet réalisé dans le cadre de la SAE DDAW
+Projet réalisé dans le cadre de  Principe de programmation 
 
 **Étudiant : BENIAINI Amina**
