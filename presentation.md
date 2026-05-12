@@ -2,7 +2,7 @@
 
 ## Contexte du projet
 
-Ce projet a été réalisé dans le cadre de la SAE :
+Ce projet a été réalisé dans le cadre de :
 
 **“Développement & Déploiement d’une Application Web RESTful Conteneurisée”**
 
