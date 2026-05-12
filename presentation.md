@@ -1,4 +1,4 @@
-# StockFlow — Présentation du Projet SAE
+# StockFlow — Présentation du Projet 
 
 ## Contexte du projet
 
