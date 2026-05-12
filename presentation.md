@@ -441,14 +441,6 @@ Le projet final contient :
 
 # Démonstration
 
-Pendant la démonstration :
-
-* Login
-* Dashboard
-* Création produit
-* Mouvement de stock
-* Relations produit/fournisseur
-* Historique des mouvements
 
 ---
 
