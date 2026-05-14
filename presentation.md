@@ -157,7 +157,7 @@ Le backend Django contient :
 
 Le backend gère :
 
-* la logique métier
+* les focntionalites 
 * les validations
 * la communication avec PostgreSQL
 
@@ -237,7 +237,7 @@ Le stock est automatiquement recalculé.
 
 ---
 
-## Validation métier
+## Validation 
 
 Le système empêche :
 
@@ -258,7 +258,7 @@ Le dashboard affiche :
 
 ---
 
-# Logique métier importante
+# Logique  importante
 
 Le stock n’est pas modifié directement.
 
